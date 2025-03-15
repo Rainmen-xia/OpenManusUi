@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenManus Web</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            gap: 20px;
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 左右面板布局 */
+        .left-panel {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 标题样式 */
+        h2, h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* 日志输出区域样式 */
+        .output-container {
+            flex-grow: 1;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 250px); /* 设置固定高度，减去其他元素的高度 */
+            min-height: 300px;
+            overflow: hidden; /* 防止容器本身出现滚动条 */
+        }
+
+        #output {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            overflow-y: auto; /* 添加垂直滚动条 */
+            overflow-x: hidden; /* 隐藏水平滚动条 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 自定义滚动条样式 */
+        #output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #output::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #output::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        #output::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 输入区域样式 */
+        .input-area {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: none;
+            min-height: 80px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        /* 按钮样式 */
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        #executeBtn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        #stopBtn {
+            background: #f44336;
+            color: white;
+        }
+
+        /* 文件浏览器样式 */
+        .file-browser {
+            height: 30%; /* 从40%减小到30% */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px; /* 添加底部间距 */
+        }
+
+        /* 文件预览区域 */
+        .file-preview {
+            height: 70%; /* 从60%增加到70% */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .file-preview-header {
+            background: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .file-preview-content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fff;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 自定义预览区域滚动条样式 */
+        .file-preview-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .file-preview-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .file-preview-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .file-preview-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .file-browser-header {
+            background: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-browser-path {
+            font-weight: bold;
+        }
+
+        .file-browser-content {
+            overflow-y: auto;
+            flex-grow: 1;
+            background: #fff;
+        }
+
+        .file-item {
+            padding: 6px 10px; /* 减小上下padding */
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.9em; /* 稍微减小字体大小 */
+        }
+
+        .file-item:hover {
+            background: #f5f5f5;
+        }
+
+        .file-item-icon {
+            margin-right: 10px;
+            color: #555;
+        }
+
+        .file-item-name {
+            flex-grow: 1;
+        }
+
+        .file-item-meta {
+            color: #888;
+            font-size: 0.85em; /* 减小元数据字体大小 */
+        }
+
+        .folder-icon {
+            color: #ffc107;
+        }
+
+        .file-icon {
+            color: #2196F3;
+        }
+
+        .refresh-button {
+            background: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .action-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* 消息样式 */
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧面板：对话和日志 -->
+    <div class="left-panel">
+        <h2>💬 对话与执行</h2>
+        
+        <!-- 日志输出区域 - 放在上面 -->
+        <div class="output-container">
+            <div id="output">
+                <!-- 日志内容将通过JavaScript填充 -->
+            </div>
+        </div>
+        
+        <!-- 输入区域 - 放在下面 -->
+        <div class="input-area">
+            <textarea id="input" placeholder="输入你期望的需求..." rows="3"></textarea>
+            <div class="action-buttons">
+                <button id="executeBtn" onclick="executePrompt()">🚀 执行任务</button>
+                <button id="stopBtn" onclick="stopExecution()" style="margin-left:10px">🛑 停止任务</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧面板：文件浏览器 -->
+    <div class="right-panel">
+        <h2>📁 工作区文件</h2>
+        
+        <!-- 文件浏览器 -->
+        <div class="file-browser">
+            <div class="file-browser-header">
+                <div class="file-browser-path" id="currentPath">Workspace</div>
+                <button class="refresh-button" onclick="loadWorkspaceFiles()">刷新</button>
+            </div>
+            <div class="file-browser-content" id="fileList">
+                <!-- 文件列表将通过JavaScript填充 -->
+            </div>
+        </div>
+
+        <!-- 文件预览区域 -->
+        <div class="file-preview">
+            <div class="file-preview-header" id="previewFileName">
+                未选择文件
+            </div>
+            <div class="file-preview-content" id="previewContent">
+                <!-- 文件内容将通过JavaScript填充 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/frontend.js"></script>
+    <script src="js/file-browser.js"></script>
+</body>
+</html>

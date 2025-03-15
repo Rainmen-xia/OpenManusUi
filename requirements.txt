@@ -1,0 +1,8 @@
+# 基础依赖
+tkinter>=8.6
+# 打包工具
+pyinstaller>=5.0.0
+# 开发工具
+pytest>=7.0.0
+black>=22.0.0
+flake8>=4.0.0
