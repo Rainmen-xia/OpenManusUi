@@ -10,7 +10,7 @@
 1. use "uvicorn web:app --reload" instead of "python main.py" to start project
 2. access http://127.0.0.1:8000/static/index.html
 
-![img.png](pics/img.png)
+![new_img.png](pics/new_img.png)
 
 # OpenManus 🙋
 Manus is incredible, but OpenManus can achieve any ideas without an Invite Code 🛫!

@@ -10,7 +10,7 @@
 1. 用uvicorn web:app --reload代替python main.py启动即可
 2. 访问http://127.0.0.1:8000/static/index.html
 
-![img.png](pics/img.png)
+![new_img.png](pics/new_img.png)
 
 # OpenManus 🙋  
 
